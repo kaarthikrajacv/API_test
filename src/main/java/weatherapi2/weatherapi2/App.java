@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.restassured.RestAssured;
+import io.restassured.internal.RestAssuredResponseImpl;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -25,7 +26,7 @@ import junit.framework.Assert;
  * Hello world!
  *
  */
-public class App 
+public class App
 {
 	
 	int a;
@@ -58,69 +59,86 @@ RestAssured.baseURI = "http://api.openweathermap.org";
     			.when().get("/data/2.5/weather");
     	
     	
-    	//JsonPath responJson = response.jsonPath();
-    	
     	String base = response.asString();
     	
-    	JSONArray arr = new JSONArray();
+    	//System.out.println("The response is " +base);
     	
-    	arr.put(1);
-    	arr.put(2.1);
-    	arr.put("sads");
+    	JSONObject respJson = new JSONObject(response.asString());
     	
-    	JSONObject dsd = new JSONObject();
-    	dsd.put("test", arr);
-    	dsd.put("dskd", "dsc");
+    	JSONArray  jarray = respJson.getJSONArray("weather");
     	
-    	parse(dsd.toString());
+    	/**JSONArray testArray = new JSONArray();
+    	testArray.put(1);
+    	testArray.put("djshdj");
+    	testArray.put(3.3);
     	
-//    	JSONObject obj = new JSONObject(base);
-//    	
-//    	for(Object ob : obj.getJSONArray("weather")) {
-//    		System.out.println(ob);
-//    		
-//    		JSONObject o = new JSONObject(ob.toString());
-//    		
-//    		System.out.println("The jso object insede array is "+ o);
-//    	}
-//    	
-//    	System.out.println(obj.getJSONArray("weather").get(0));
+    	JSONObject testJsonObj = new JSONObject();
+    	testJsonObj.put("numArray", testArray);
     	
+    	JSONArray  testJarray = testJsonObj.getJSONArray("numArray");
+    	
+    	System.out.println(testJarray);**/
+    	
+    	for(Object ob : jarray) {
+    		
+    		
+    		JSONObject weatherJsonObj = new JSONObject(ob.toString());
+    		
+    		//System.out.println(weatherJsonObj.get("description"));
+    		
+    		//System.out.println("The weather json object is " +ob);
+    		
+    		parse1(base);
+    		
+    	}
     	
     }
 	
-	public static void parse(String json) throws Exception  {
-	       //JsonFactory factory = new JsonFactory();
-
-	       ObjectMapper mapper = new ObjectMapper();
-	       JsonNode rootNode = mapper.readTree(json);  
-
-	       Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
-	       while (fieldsIterator.hasNext()) {
-
-	           Map.Entry<String,JsonNode> field = fieldsIterator.next();
-	           
-	        	   if(field.getValue().isArray()) {
-	        		
-	        		   for(JsonNode node : field.getValue()) {
-	        			   if(node.isObject()) {
-	        			   parse(node.toString());
-	        			   }
-	        			   else {
-	        				   System.out.println(node.asText());
-	        			   }
-	        		   }
-	        	   }
-	        	   else if(field.getValue().isObject()) {
-	        		   parse(field.getValue().toString());
-	        	   }else {
-	        		   System.out.println("Key: " + field.getKey() + "\nValue: " + field.getValue() +"\n");
-	        	   }
-//        	   if(!field.getValue().isObject() && !field.getValue().isArray()) {
-//        		   System.out.println("Key: " + field.getKey() + "\tValue:" + field.getValue());
-//        	   }
-        	   
-	       }
+	
+	public static void parse1(String json) throws Exception {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		JsonNode rootNode = mapper.readTree(json);
+		
+		System.out.println("The root node is " +rootNode);
+		
+		Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+		
+		while(fieldsIterator.hasNext()) {
+			
+			Map.Entry<String, JsonNode> field = fieldsIterator.next();
+			
+			if(field.getValue().isArray()) {
+				
+				
+				for(JsonNode node : field.getValue()) {
+					
+					parse1(node.toString());
+				
+				}
+			}else if(field.getValue().isObject()) {
+				parse1(field.getValue().toString());
+				
+			}
+			
+			else {
+				
+				if(field.getKey().equals("base")) {
+					Assert.assertEquals(field.getValue(), "stations");
+				}
+				
+				System.out.println("Key is " + field.getKey() + "\n and the value is " + field.getValue() + "\n");
+				
+			}
+			
+		}
+		
+		
+		
+		
+		
+		
 	}
 	
 	

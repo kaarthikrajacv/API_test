@@ -10,14 +10,9 @@ public class TestInterface {
 
 	public static void main(String[] args) {
 		
-		TestInterface ti = new TestInterface();
+		EngineeringEmployee enggEMp = new EngineeringEmployee(1, "Kaarthik");
 		
-		//Boolean ddd = new Boolean(true);
-		
-		
-		ti.changeEnum(en);
-		
-		System.out.println(en);
+		System.out.println(enggEMp);
 
 	}
 	

@@ -35,4 +35,10 @@ public class EngineeringEmployee implements Employee{
 		return employeeId;
 	}
 
+	@Override
+	public String toString() {
+		return "EngineeringEmployee [employeeId=" + employeeId + ", employeeName=" + employeeName + "]";
+	}
+
+	
 }
